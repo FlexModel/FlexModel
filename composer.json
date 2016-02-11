@@ -1,0 +1,28 @@
+{
+    "name": "flexmodel/flexmodel",
+    "description": "An XML-based model (object / view / form) configuration library.",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Niels Nijens",
+            "email": "niels@connectholland.nl"
+        }
+    ],
+    "require": {
+        "php": "^5.4 | ^7.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^4.8"
+    },
+    "autoload": {
+        "psr-4": {
+            "FlexModel\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "FlexModel\\Test\\": "tests/"
+        }
+    }
+}
