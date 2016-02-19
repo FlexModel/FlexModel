@@ -2,6 +2,9 @@
 
 namespace FlexModel;
 
+use DOMDocument;
+use XSLTProcessor;
+
 /**
  * FlexModel.
  *
@@ -10,6 +13,60 @@ namespace FlexModel;
 class FlexModel
 {
     /**
+     * The identifier of this instance.
+     *
+     * @var string
+     */
+    private $identifier;
+
+    /**
+     * The loaded configuration.
+     *
+     * @var array
+     */
+    private $configuration;
+
+    /**
+     * The DOMDocument instance with the XML configuration.
+     *
+     * @var DOMDocument
+     */
+    private $domDocument;
+
+    /**
+     * The location of cache path.
+     *
+     * @var string
+     */
+    private $cachePath;
+
+    /**
+     * The location of XML Schema file.
+     *
+     * @var string
+     */
+    private $xmlSchemaFile = __DIR__.'/Resources/xsd/flexmodel.xsd';
+
+    /**
+     * The registered external object references.
+     *
+     * @var string[]
+     */
+    private $externalObjectReferences = array();
+
+    /**
+     * The default field configuration.
+     *
+     * @var array
+     */
+    protected $defaultFieldConfiguration = array(
+        'name' => '',
+        'label' => null,
+        'datatype' => '',
+        'options' => null,
+        'default_value' => null,
+    );
+
     /**
      * Constructs a new FlexModel instance.
      *
@@ -17,6 +74,7 @@ class FlexModel
      */
     public function __construct($identifier = 'default')
     {
+        $this->identifier = $identifier;
     }
 
     /**
@@ -28,6 +86,13 @@ class FlexModel
      */
     public function load(DOMDocument $domDocument, $cachePath, $xmlSchemaFile = null)
     {
+        $this->domDocument = $domDocument;
+        $this->cachePath = $cachePath;
+        if (isset($xmlSchemaFile)) {
+            $this->xmlSchemaFile = $xmlSchemaFile;
+        }
+
+        $this->loadConfiguration();
     }
 
     /**
@@ -53,6 +118,7 @@ class FlexModel
      */
     public function getCachePath()
     {
+        return $this->cachePath;
     }
 
     /**
@@ -62,6 +128,9 @@ class FlexModel
      */
     public function getCacheFile()
     {
+        if (isset($this->cachePath)) {
+            return sprintf('%s/flexmodel-%s.php', $this->cachePath, $this->identifier);
+        }
     }
 
     /**
@@ -267,8 +336,67 @@ class FlexModel
      */
     public static function isQuotedValue($value)
     {
+        if (ctype_digit($value) || in_array($value, array('true', 'false', 'null'))) {
+            return false;
+        }
+
+        return true;
     }
+
+    /**
+     * Loads the cache file or generates the cache file (and loads it afterwards).
+     *
+     * @param bool $generateCacheFile
      */
+    private function loadConfiguration($generateCacheFile = true)
     {
+        $cacheFile = $this->getCacheFile();
+        if (is_file($cacheFile)) {
+            $configuration = require $cacheFile;
+            if (isset($configuration['__checksum']) && $configuration['__checksum'] === md5($this->domDocument->saveXML())) {
+                unset($configuration['__checksum']);
+                $this->configuration = $configuration;
+
+                $generateCacheFile = false;
+            }
+        }
+
+        if ($generateCacheFile === true) {
+            $this->generateCacheFile();
+        }
+    }
+
+    /**
+     * Generates the cache file.
+     */
+    private function generateCacheFile()
+    {
+        $previousErrorSetting = libxml_use_internal_errors(true);
+        libxml_clear_errors();
+        if (@$this->domDocument->schemaValidate($this->xmlSchemaFile)) {
+            $this->domDocument->preserveWhiteSpace = false;
+            // Reload the XML to strip whitespace from XIncluded XML.
+            $this->domDocument->loadXML($this->domDocument->saveXML());
+
+            $xslDocument = new DOMDocument('1.0', 'UTF-8');
+            $xslDocument->load(__DIR__.'/Resources/xsl/flexmodel-cache.xsl');
+
+            $processor = new XSLTProcessor();
+            $processor->setParameter('', 'checksum', md5($this->domDocument->saveXML()));
+            $processor->importStyleSheet($xslDocument);
+            $processor->registerPHPFunctions();
+
+            $configuration = $processor->transformToXML($this->domDocument);
+            file_put_contents($this->getCacheFile(), $configuration);
+
+            $this->loadConfiguration(false);
+        } else {
+            $errors = libxml_get_errors();
+            foreach ($errors as $error) {
+                trigger_error(sprintf('Line %s: %s in "%s"', $error->line, trim($error->message), $error->file), E_USER_WARNING);
+            }
+            libxml_clear_errors();
+        }
+        libxml_use_internal_errors($previousErrorSetting);
     }
 }
