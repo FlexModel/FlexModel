@@ -1,4 +1,327 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <xs:schema version='1.0' xmlns:xs='http://www.w3.org/2001/XMLSchema' elementFormDefault='qualified'>
 
+    <!--
+    Import XML namespace (used by xincludes)
+    -->
+    <xs:import namespace='http://www.w3.org/XML/1998/namespace' schemaLocation='xml.xsd'/>
+
+    <!--
+    The root node of the flexmodel.
+    -->
+    <xs:element name='flexmodel'>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name='object' type='object' minOccurs='1' maxOccurs='unbounded'/>
+            </xs:sequence>
+        </xs:complexType>
+        <xs:unique name='UniqueObjectName'>
+            <xs:selector xpath='object'/>
+            <xs:field xpath='@name'/>
+        </xs:unique>
+    </xs:element>
+
+    <!--
+    An object to be configured so it can be build (and be rebuild). An object may contain fields, views and forms.
+    -->
+    <xs:complexType name='object'>
+        <xs:sequence>
+            <xs:element name='fields' type='object.fields' minOccurs='0' maxOccurs='1'>
+                <xs:unique name='UniqueObjectFieldName'>
+                    <xs:selector xpath='field'/>
+                    <xs:field xpath='@name'/>
+                </xs:unique>
+            </xs:element>
+            <xs:element name='forms' type='object.forms' minOccurs='0' maxOccurs='1'>
+                <xs:unique name='UniqueObjectFormName'>
+                    <xs:selector xpath='form'/>
+                    <xs:field xpath='@name'/>
+                </xs:unique>
+            </xs:element>
+            <xs:element name='views' type='object.views' minOccurs='0' maxOccurs='1'>
+                <xs:unique name='UniqueObjectViewName'>
+                    <xs:selector xpath='view'/>
+                    <xs:field xpath='@name'/>
+                </xs:unique>
+            </xs:element>
+        </xs:sequence>
+        <xs:attribute name='name' type='xs:string' use='required'/>
+        <xs:attribute name='recordClass' type='xs:string' use='optional'/>
+        <xs:attributeGroup ref='xml:specialAttrs'/>
+    </xs:complexType>
+
+    <!--
+    ...
+    -->
+    <xs:complexType name='object.fields'>
+        <xs:sequence>
+            <xs:element name='field' type='object.fields.field' minOccurs='1' maxOccurs='unbounded'/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!--
+    ...
+    -->
+    <xs:complexType name='object.fields.field'>
+        <xs:sequence>
+            <xs:element name='options' type='object.fields.field.options' minOccurs='0' maxOccurs='1'/>
+            <xs:element name='form_defaults' type='object.fields.field.form_defaults' minOccurs='0' maxOccurs='1'/>
+        </xs:sequence>
+        <xs:attributeGroup ref='base-field'/>
+        <xs:attribute name='datatype' type='model-datatypes' use='required'/>
+        <xs:attribute name='size' type='xs:integer' use='optional'/>
+        <xs:attribute name='scale' type='xs:integer' use='optional'/>
+        <xs:attribute name='default_value' type='xs:string' use='optional'/>
+    </xs:complexType>
+
+    <!--
+    Predefined options for a field.
+    -->
+    <xs:complexType name='object.fields.field.options'>
+        <xs:sequence>
+            <xs:choice>
+                <xs:element name='optiongroup' type='object.fields.field.options.optiongroup' minOccurs='1' maxOccurs='unbounded'/>
+                <xs:element name='option' type='object.fields.field.options.option' minOccurs='1' maxOccurs='unbounded'/>
+            </xs:choice>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!--
+    A predefined optiongroup for a field.
+    -->
+    <xs:complexType name='object.fields.field.options.optiongroup'>
+        <xs:sequence>
+            <xs:element name='option' type='object.fields.field.options.option' minOccurs='1' maxOccurs='unbounded'/>
+        </xs:sequence>
+        <xs:attribute name='label' type='xs:string' use='required'/>
+    </xs:complexType>
+
+    <!--
+    A predefined option for a field
+    -->
+    <xs:complexType name='object.fields.field.options.option'>
+        <xs:attribute name='label' type='xs:string' use='optional'/>
+        <xs:attribute name='value' type='option-value' use='required'/>
+    </xs:complexType>
+
+    <!--
+    Default settings for a field to be included in all forms.
+    -->
+    <xs:complexType name='object.fields.field.form_defaults'>
+        <xs:sequence>
+            <xs:element name='notices' type='object.fields.field.form_defaults.notices' minOccurs='0' maxOccurs='1'/>
+            <xs:element name='validators' type='object.fields.field.form_defaults.validators' minOccurs='0' maxOccurs='1'/>
+        </xs:sequence>
+        <xs:attribute name='required' type='boolean' use='optional'/>
+        <xs:attribute name='readonly' type='boolean' use='optional'/>
+        <xs:attribute name='fieldtype' type='xs:string' use='optional'/>
+    </xs:complexType>
+
+    <!--
+    Default validation notices for a field to be included in all forms.
+    -->
+    <xs:complexType name='object.fields.field.form_defaults.notices'>
+        <xs:attribute name='hint' type='xs:string' use='optional'/>
+        <xs:attribute name='placeholder' type='xs:string' use='optional'/>
+    </xs:complexType>
+
+    <!--
+    ...
+    -->
+    <xs:complexType name='object.fields.field.form_defaults.validators'>
+        <xs:sequence>
+            <xs:element name='validator' type='object.fields.field.form_defaults.validators.validator' minOccurs='1' maxOccurs='unbounded'/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!--
+    ...
+    -->
+    <xs:complexType name='object.fields.field.form_defaults.validators.validator'>
+        <xs:sequence>
+            <xs:any minOccurs='0' processContents='skip'/>
+        </xs:sequence>
+        <xs:attribute name='name' type='xs:string' use='required'/>
+        <xs:anyAttribute processContents='skip'/>
+    </xs:complexType>
+
+    <!--
+    The forms definition collection for objects....
+    -->
+    <xs:complexType name='object.forms'>
+        <xs:sequence>
+            <xs:element name='form' type='object.forms.form' minOccurs='0' maxOccurs='unbounded'/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!--
+    A form can contain collections with declarations of titles and fields.......
+    -->
+    <xs:complexType name='object.forms.form'>
+        <xs:sequence>
+            <xs:element name='titles' type='titles' minOccurs='0' maxOccurs='1'/>
+            <xs:element name='fields' type='object.forms.form.fields' minOccurs='1' maxOccurs='1'/>
+        </xs:sequence>
+        <xs:attribute name='name' type='xs:string' use='optional'/>
+    </xs:complexType>
+
+    <!--
+    ...
+    -->
+    <xs:complexType name='object.forms.form.fields'>
+        <xs:sequence>
+            <xs:element name='field' type='object.forms.form.fields.field' minOccurs='1' maxOccurs='unbounded'/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!--
+    A field definition within a form.
+    -->
+    <xs:complexType name='object.forms.form.fields.field'>
+        <xs:complexContent>
+            <xs:extension base='object.fields.field.form_defaults'>
+                <xs:attributeGroup ref='form-or-view-field'/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <!--
+    Views to be configured for the configured object, views are a composition of fields from the underlying database....
+    -->
+    <xs:complexType name='object.views'>
+        <xs:sequence>
+            <xs:element name='view' type='object.views.view' minOccurs='0' maxOccurs='unbounded'/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!--
+    A view for the configured object, contains a collection of titles and fields.....
+    -->
+    <xs:complexType name='object.views.view'>
+        <xs:sequence>
+            <xs:element name='titles' type='titles' minOccurs='0' maxOccurs='1'/>
+            <xs:element name='fields' type='object.views.view.fields' minOccurs='0' maxOccurs='1'/>
+        </xs:sequence>
+        <xs:attribute name='name' type='xs:string' use='required'/>
+        <xs:attribute name='label' type='xs:string' use='optional'/>
+        <xs:attribute name='location' type='xs:string' use='required'/>
+        <xs:attribute name='viewgroup' type='xs:string' use='optional'/>
+    </xs:complexType>
+
+    <!--
+    ...
+    -->
+    <xs:complexType name='object.views.view.fields'>
+        <xs:sequence>
+            <xs:element name='field' type='object.views.view.fields.field' minOccurs='1' maxOccurs='unbounded'/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!--
+    ...
+    -->
+    <xs:complexType name='object.views.view.fields.field'>
+        <xs:attributeGroup ref='form-or-view-field'/>
+    </xs:complexType>
+
+    <!--
+    A collection of titles for a form or view
+    -->
+    <xs:complexType name='titles'>
+        <xs:sequence minOccurs='0' maxOccurs='1'>
+            <xs:element name='title' type='title' minOccurs='1' maxOccurs='unbounded'/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!--
+    A title for a group of fields within a form or view.
+    -->
+    <xs:complexType name='title'>
+        <xs:attribute name='name' type='xs:string' use='required'/>
+        <xs:attribute name='label' type='xs:string' use='required'/>
+    </xs:complexType>
+
+    <!--
+    Base field attributes
+    -->
+    <xs:attributeGroup name='base-field'>
+        <xs:attribute name='name' type='field-name' use='required'/>
+        <xs:attribute name='label' type='xs:string' use='optional'/>
+    </xs:attributeGroup>
+
+    <!--
+    Field attributes for a form or view field.
+    -->
+    <xs:attributeGroup name='form-or-view-field'>
+        <xs:attribute name='name' type='field-name' use='required'/>
+        <xs:attribute name='label' type='xs:string' use='optional'/>
+        <xs:attribute name='location' type='xs:string' use='required'/>
+        <xs:attribute name='group' type='xs:string' use='optional'/>
+    </xs:attributeGroup>
+
+    <!--
+    Restrictions for a field name.
+    -->
+    <xs:simpleType name='field-name'>
+        <xs:restriction base='xs:string'>
+            <xs:minLength value='1'/>
+            <xs:maxLength value='60'/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!--
+    Restrictions for an option value.
+    -->
+    <xs:simpleType name='option-value'>
+        <xs:restriction base='xs:string'>
+            <xs:pattern value='[+_a-z0-9-]*'/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!--
+    Allowed datatypes for a field.
+    -->
+    <xs:simpleType name='model-datatypes'>
+        <xs:union memberTypes='model-datatypes-fixed model-datatypes-foreign'/>
+    </xs:simpleType>
+
+    <!--
+    Allowed fixed datatypes.
+    -->
+    <xs:simpleType name='model-datatypes-fixed'>
+        <xs:restriction base='xs:string'>
+            <xs:enumeration value='BOOLEAN'/>
+            <xs:enumeration value='DATE'/>
+            <xs:enumeration value='DATEINTERVAL'/>
+            <xs:enumeration value='DATETIME'/>
+            <xs:enumeration value='DECIMAL'/>
+            <xs:enumeration value='FILE'/>
+            <xs:enumeration value='FLOAT'/>
+            <xs:enumeration value='HTML'/>
+            <xs:enumeration value='INTEGER'/>
+            <xs:enumeration value='JSON'/>
+            <xs:enumeration value='SET'/>
+            <xs:enumeration value='TEXT'/>
+            <xs:enumeration value='VARCHAR'/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!--
+    Allowed foreign object datatypes for a field should be prefixed with "OBJECT." to allow other fixed datatypes to validate.
+    -->
+    <xs:simpleType name='model-datatypes-foreign'>
+        <xs:restriction base='xs:string'>
+            <xs:pattern value='(OBJECT.*[a-zA-Z])'/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!--
+    Boolean.
+    -->
+    <xs:simpleType name='boolean'>
+        <xs:restriction base='xs:string'>
+            <xs:pattern value='true|false'/>
+        </xs:restriction>
+    </xs:simpleType>
+
 </xs:schema>
