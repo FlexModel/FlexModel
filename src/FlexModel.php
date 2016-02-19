@@ -100,6 +100,9 @@ class FlexModel
      */
     public function reload()
     {
+        $this->configuration = null;
+
+        $this->load($this->domDocument, $this->cachePath, $this->xmlSchemaFile);
     }
 
     /**
@@ -109,6 +112,7 @@ class FlexModel
      */
     public function getDOMDocument()
     {
+        return $this->domDocument;
     }
 
     /**
@@ -142,6 +146,9 @@ class FlexModel
      */
     public function hasObject($objectName)
     {
+        $objectNames = $this->getObjectNames();
+
+        return in_array($objectName, $objectNames);
     }
 
     /**
@@ -154,6 +161,9 @@ class FlexModel
      */
     public function hasField($objectName, $fieldName)
     {
+        $field = $this->getField($objectName, $fieldName);
+
+        return is_array($field);
     }
 
     /**
@@ -165,6 +175,7 @@ class FlexModel
      */
     public function isObjectReference($datatype)
     {
+        return (in_array($datatype, $this->externalObjectReferences) || $this->hasObject($datatype));
     }
 
     /**
@@ -174,6 +185,12 @@ class FlexModel
      */
     public function getObjectNames()
     {
+        $objectNames = array();
+        if (is_array($this->configuration)) {
+            $objectNames = array_keys($this->configuration);
+        }
+
+        return $objectNames;
     }
 
     /**
@@ -181,10 +198,19 @@ class FlexModel
      *
      * @param string $objectName
      *
-     * @return array
+     * @return array|null
      */
     public function getModelConfiguration($objectName)
     {
+        if (isset($this->configuration[$objectName])) {
+            $modelConfiguration = $this->configuration[$objectName];
+            $modelConfiguration['__object_name'] = $objectName;
+            if (isset($modelConfiguration['fields']) === false) {
+                $modelConfiguration['fields'] = array();
+            }
+
+            return $modelConfiguration;
+        }
     }
 
     /**
@@ -197,6 +223,20 @@ class FlexModel
      */
     public function getFormConfiguration($objectName, $formName)
     {
+        $modelConfiguration = $this->getModelConfiguration($objectName);
+        if (isset($modelConfiguration['forms'][$formName])) {
+            $formConfiguration = $modelConfiguration['forms'][$formName];
+            foreach ($formConfiguration['fields'] as $i => $formField) {
+                $fieldConfiguration = $this->getField($objectName, $formField['name'], false);
+                if (isset($fieldConfiguration['form_defaults'])) {
+                    $formConfiguration['fields'][$i] = array_replace_recursive($fieldConfiguration['form_defaults'], $formField);
+                }
+            }
+
+            usort($formConfiguration['fields'], array($this, 'sortByLocation'));
+
+            return $formConfiguration;
+        }
     }
 
     /**
@@ -209,6 +249,23 @@ class FlexModel
      */
     public function getViewConfiguration($objectName, $viewName)
     {
+        $modelConfiguration = $this->getModelConfiguration($objectName);
+        if (isset($modelConfiguration['views'][$viewName])) {
+            $viewConfiguration = $modelConfiguration['views'][$viewName];
+            if (isset($viewConfiguration['fields']) === false) {
+                $viewConfiguration['fields'] = array();
+            }
+
+            foreach ($viewConfiguration['fields'] as $i => $viewField) {
+                $fieldConfiguration = $this->getField($objectName, $viewField['name'], false);
+                if (is_array($fieldConfiguration)) {
+                    $viewConfiguration['fields'][$i] = array_replace_recursive($fieldConfiguration, $viewField);
+                }
+            }
+            usort($viewConfiguration['fields'], array($this, 'sortByLocation'));
+
+            return $viewConfiguration;
+        }
     }
 
     /**
@@ -221,6 +278,20 @@ class FlexModel
      */
     public function getViewConfigurationsByViewgroupOfView($objectName, $viewName)
     {
+        $viewConfigurations = array();
+
+        $modelConfiguration = $this->getModelConfiguration($objectName);
+        $viewConfiguration = $this->getViewConfiguration($objectName, $viewName);
+        if (isset($viewConfiguration['viewgroup'])) {
+            $viewgroup = $viewConfiguration['viewgroup'];
+            foreach ($modelConfiguration['views'] as $viewName => $viewConfiguration) {
+                if (isset($viewConfiguration['viewgroup']) && $viewConfiguration['viewgroup'] == $viewgroup) {
+                    $viewConfigurations[$viewName] = $this->getViewConfiguration($objectName, $viewName);
+                }
+            }
+        }
+
+        return $viewConfigurations;
     }
 
     /**
@@ -230,6 +301,13 @@ class FlexModel
      */
     public function getFieldNames($objectName)
     {
+        $fieldNames = array();
+        $modelConfiguration = $this->getModelConfiguration($objectName);
+        if (isset($modelConfiguration['__field_index'])) {
+            $fieldNames = array_keys($modelConfiguration['__field_index']);
+        }
+
+        return $fieldNames;
     }
 
     /**
@@ -242,6 +320,13 @@ class FlexModel
      */
     public function getFieldNamesByView($objectName, $viewName)
     {
+        $fieldNames = array();
+        $fieldConfigurations = $this->getFieldsByView($objectName, $viewName);
+        foreach ($fieldConfigurations as $fieldConfiguration) {
+            array_push($fieldNames, $fieldConfiguration['name']);
+        }
+
+        return $fieldNames;
     }
 
     /**
@@ -253,6 +338,13 @@ class FlexModel
      */
     public function getFields($objectName)
     {
+        $fieldConfigurations = array();
+        $modelConfiguration = $this->getModelConfiguration($objectName);
+        if (is_array($modelConfiguration)) {
+            $fieldConfigurations = $modelConfiguration['fields'];
+        }
+
+        return $fieldConfigurations;
     }
 
     /**
@@ -261,10 +353,20 @@ class FlexModel
      * @param string $objectName
      * @param string $datatype
      *
-     * @return array|null
+     * @return array
      */
     public function getFieldsByDatatype($objectName, $datatype)
     {
+        $datatypeFieldConfigurations = array();
+
+        $fieldConfigurations = $this->getFields($objectName);
+        foreach ($fieldConfigurations as $fieldConfiguration) {
+            if ($fieldConfiguration['datatype'] == $datatype) {
+                $datatypeFieldConfigurations[] = $fieldConfiguration;
+            }
+        }
+
+        return $datatypeFieldConfigurations;
     }
 
     /**
@@ -277,6 +379,18 @@ class FlexModel
      */
     public function getFieldsByView($objectName, $viewName)
     {
+        $fieldConfigurations = array();
+
+        $viewConfiguration = $this->getViewConfiguration($objectName, $viewName);
+        if (is_array($viewConfiguration)) {
+            $fieldConfigurations = $viewConfiguration["fields"];
+            foreach ($fieldConfigurations as $i => $fieldConfiguration) {
+                $fieldConfigurations[$i] = array_replace_recursive($this->defaultFieldConfiguration, $fieldConfiguration);
+            }
+        }
+        usort($fieldConfigurations, array($this, 'sortByLocation'));
+
+        return $fieldConfigurations;
     }
 
     /**
@@ -289,6 +403,15 @@ class FlexModel
      */
     public function getField($objectName, $fieldName, $excludeFormDefaults = true)
     {
+        $modelConfiguration = $this->getModelConfiguration($objectName);
+        if (isset($modelConfiguration['__field_index'][$fieldName])) {
+            $fieldConfiguration = array_replace_recursive($this->defaultFieldConfiguration, $modelConfiguration['fields'][$modelConfiguration['__field_index'][$fieldName]]);
+            if ($excludeFormDefaults && isset($fieldConfiguration['form_defaults'])) {
+                unset($fieldConfiguration["form_defaults"]);
+            }
+
+            return $fieldConfiguration;
+        }
     }
 
     /**
@@ -304,6 +427,27 @@ class FlexModel
      */
     public function getReferencedField($objectName, $fieldName, array & $excludedFieldNameParts = array(), $objectReferencesOnly = true)
     {
+        $foundFieldName = null;
+        $fieldNameParts = explode('_', $fieldName);
+        $excludedFieldNameParts = array();
+        $initial = false;
+        while (count($fieldNameParts) > 0) {
+            if ($initial === true) {
+                array_unshift($excludedFieldNameParts, array_pop($fieldNameParts));
+            }
+
+            $fieldName = implode("_", $fieldNameParts);
+            if ($this->hasField($objectName, $fieldName)) {
+                $foundFieldName = $fieldName;
+                break;
+            }
+
+            $initial = true;
+        }
+
+        if (!empty($foundFieldName) && is_array($fieldConfiguration = $this->getField($objectName, $foundFieldName)) && ($objectReferencesOnly === false || $this->isObjectReference($fieldConfiguration['datatype']))) {
+            return $fieldConfiguration;
+        }
     }
 
     /**
@@ -313,6 +457,7 @@ class FlexModel
      */
     public function addExternalObjectReference($objectName)
     {
+        $this->externalObjectReferences[] = $objectName;
     }
 
     /**
@@ -325,6 +470,13 @@ class FlexModel
      */
     public function sortByLocation(array $field1, array $field2)
     {
+        if ($field1['location'] == $field2['location']) {
+            return 0;
+        } elseif ($field1['location'] < $field2['location']) {
+            return -1;
+        }
+
+        return 1;
     }
 
     /**
