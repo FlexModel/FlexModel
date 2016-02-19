@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<xs:schema version='1.0' xmlns:xs='http://www.w3.org/2001/XMLSchema' elementFormDefault='qualified'>
+
+    <!--
+    Redefines a complexType by extending it.
+    -->
+    <xs:redefine schemaLocation='../../../src/Resources/xsd/flexmodel.xsd'>
+        <xs:complexType name='object.fields.field.form_defaults.notices'>
+            <xs:complexContent>
+                <xs:extension base='object.fields.field.form_defaults.notices'>
+                    <xs:attribute name='description' type='xs:string' use='optional'/>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:redefine>
+
+</xs:schema>

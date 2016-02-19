@@ -1,0 +1,78 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<flexmodel>
+    <object name='Test'>
+        <fields>
+            <field name='booleanfield' label='' datatype='BOOLEAN' default_value='0'/>
+            <field name='datefield' label='' datatype='DATE'/>
+            <field name='dateintervalfield' label='' datatype='DATEINTERVAL'/>
+            <field name='datetimefield' label='' datatype='DATETIME'/>
+            <field name='decimalfield' label='' datatype='DECIMAL'/>
+            <field name='filefield' label='' datatype='FILE'/>
+            <field name='floatfield' label='' datatype='FLOAT'/>
+            <field name='htmlfield' label='' datatype='HTML'/>
+            <field name='integerfield' label='' datatype='INTEGER'/>
+            <field name='jsonfield' label='' datatype='JSON'/>
+            <field name='setfield' label='' datatype='SET'>
+                <options>
+                    <option label='Option1' value='option1'/>
+                    <option label='Option2' value='option2'/>
+                </options>
+            </field>
+            <field name='textfield' label='' datatype='TEXT'/>
+            <field name='varcharfield' label='' datatype='VARCHAR'>
+                <form_defaults required='true' readonly='false'>
+                    <notices hint='Extra help filling out the formfield.' placeholder='Some text within the formfield'/>
+                    <validators>
+                        <validator name='some_validator_reference' validator_setting='validator_setting_value'/>
+                    </validators>
+                </form_defaults>
+            </field>
+            <field name='varcharfield_with_options' label='' datatype='VARCHAR'>
+                <options>
+                    <option label='Empty option' value=''/>
+                    <option label='Option1' value='option1'/>
+                    <option label='Option2' value='option2'/>
+                </options>
+            </field>
+            <field name='testforeign_reference' datatype='OBJECT.Testforeign'/>
+        </fields>
+        <forms>
+            <form name=''>
+                <titles>
+                    <title name='datetypes' label='Date datatypes'/>
+                </titles>
+                <fields>
+                    <field name='booleanfield' location='1'/>
+                    <field name='datefield' location='2' group='datetypes'/>
+                    <field name='dateintervalfield' location='3' group='datetypes'/>
+                    <field name='datetimefield' location='4' group='datetypes'/>
+                    <field name='varcharfield' location='5'/>
+                </fields>
+            </form>
+        </forms>
+        <views>
+            <view name='overview' label='' location='0'>
+                <titles>
+                    <title name='datetypes' label='Date datatypes'/>
+                </titles>
+                <fields>
+                    <field name='booleanfield' location='1'/>
+                    <field name='decimalfield' label='' location='2'/>
+                    <field name='datefield' location='3' group='datetypes'/>
+                    <field name='dateintervalfield' location='4' group='datetypes'/>
+                    <field name='datetimefield' location='5' group='datetypes'/>
+                </fields>
+            </view>
+            <view name='empty' label='' location='0'/>
+            <view name='view-in-viewgroup' label='' location='0' viewgroup='aviewgroup'/>
+            <view name='view-in-viewgroup2' label='' location='0' viewgroup='aviewgroup'/>
+        </views>
+    </object>
+    <object name='Testforeign'>
+        <fields>
+            <field name='varcharfield' label='' datatype='VARCHAR'/>
+        </fields>
+    </object>
+    <object name='Emptyobject'>
+    </object>
+</flexmodel>
