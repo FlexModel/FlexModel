@@ -10,20 +10,57 @@ namespace FlexModel;
 class FlexModel
 {
     /**
-     * Loads the XML configuration file.
+    /**
+     * Constructs a new FlexModel instance.
      *
-     * @param string      $file
-     * @param string      $cachePath
-     * @param string|null $schema
+     * @param string $identifier
      */
-    public function load($file, $cachePath, $schema = null)
+    public function __construct($identifier = 'default')
     {
     }
 
     /**
-     * Reloads the cached configuration.
+     * Loads the XML configuration.
+     *
+     * @param DOMDocument $domDocument
+     * @param string      $cachePath
+     * @param string|null $xmlSchemaFile
+     */
+    public function load(DOMDocument $domDocument, $cachePath, $xmlSchemaFile = null)
+    {
+    }
+
+    /**
+     * Reloads the configuration.
      */
     public function reload()
+    {
+    }
+
+    /**
+     * Returns the DOMDocument instance with the XML configuration.
+     *
+     * @return DOMDocument
+     */
+    public function getDOMDocument()
+    {
+    }
+
+    /**
+     * Returns the path to the cache directory.
+     *
+     * @return string
+     */
+    public function getCachePath()
+    {
+    }
+
+    /**
+     * Returns the location of the flexmodel cache file.
+     *
+     * @return string|null
+     */
+    public function getCacheFile()
     {
     }
 
@@ -34,7 +71,7 @@ class FlexModel
      *
      * @return bool
      */
-    public function has($objectName)
+    public function hasObject($objectName)
     {
     }
 
@@ -58,13 +95,6 @@ class FlexModel
      * @return bool
      */
     public function isObjectReference($datatype)
-    {
-    }
-
-    /**
-     * Returns the path to the cache directory.
-     */
-    public function getCachePath()
     {
     }
 
@@ -106,7 +136,7 @@ class FlexModel
      * @param string $objectName
      * @param string $viewName
      *
-     * @return array
+     * @return array|null
      */
     public function getViewConfiguration($objectName, $viewName)
     {
@@ -115,8 +145,8 @@ class FlexModel
     /**
      * Returns all the field configurations of views in the viewgroup of the specified view name.
      *
-     * @param string      $objectName
-     * @param string      $viewName
+     * @param string $objectName
+     * @param string $viewName
      *
      * @return array
      */
@@ -162,7 +192,7 @@ class FlexModel
      * @param string $objectName
      * @param string $datatype
      *
-     * @return array
+     * @return array|null
      */
     public function getFieldsByDatatype($objectName, $datatype)
     {
@@ -173,11 +203,10 @@ class FlexModel
      *
      * @param string $objectName
      * @param string $viewName
-     * @param bool   $sortByLocationOddEven
      *
      * @return array
      */
-    public function getFieldsByView($objectName, $viewName, $sortByLocationOddEven = false)
+    public function getFieldsByView($objectName, $viewName)
     {
     }
 
@@ -189,11 +218,13 @@ class FlexModel
      *
      * @return array|null
      */
-    public function getField($objectName, $fieldName)
+    public function getField($objectName, $fieldName, $excludeFormDefaults = true)
     {
     }
 
     /**
+     * Returns the field reference of the specified object.
+     * The returned excluded field name parts can be used to retrieve the field for the referenced object.
      *
      * @param string $objectName
      * @param string $fieldName
@@ -211,7 +242,7 @@ class FlexModel
      *
      * @param string $objectName
      */
-    public function addObjectReference($objectName)
+    public function addExternalObjectReference($objectName)
     {
     }
 
@@ -228,14 +259,16 @@ class FlexModel
     }
 
     /**
-     * Sorts field configuration array by location modulo (odd / even) and location.
+     * Returns true when the value should be quoted.
      *
-     * @param array $field1
-     * @param array $field2
+     * @param string $value
      *
-     * @return int
+     * @return bool
      */
-    public function sortByLocationOddEven(array $field1, array $field2)
+    public static function isQuotedValue($value)
+    {
+    }
+     */
     {
     }
 }
