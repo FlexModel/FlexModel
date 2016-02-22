@@ -18,7 +18,7 @@ class FlexModelTest extends PHPUnit_Framework_TestCase
      *
      * @var string
      */
-    private $cacheDirectory = __DIR__.'/cache';
+    private $cacheDirectory;
 
     /**
      * The default flexmodel identifier used for testing.
@@ -32,6 +32,7 @@ class FlexModelTest extends PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
+        $this->cacheDirectory = __DIR__.'/cache';
         if (is_dir($this->cacheDirectory) === false) {
             mkdir($this->cacheDirectory);
         }
