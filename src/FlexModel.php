@@ -45,7 +45,7 @@ class FlexModel
      *
      * @var string
      */
-    private $xmlSchemaFile = __DIR__.'/Resources/xsd/flexmodel.xsd';
+    private $xmlSchemaFile;
 
     /**
      * The registered external object references.
@@ -75,6 +75,7 @@ class FlexModel
     public function __construct($identifier = 'default')
     {
         $this->identifier = $identifier;
+        $this->xmlSchemaFile = __DIR__.'/Resources/xsd/flexmodel.xsd';
     }
 
     /**
