@@ -15,7 +15,9 @@ matrix:
 
 before_install: composer self-update
 
-install: composer install
+install:
+  - if [ "$TRAVIS_PHP_VERSION" = "5.4" ]; then composer update; fi;
+  - composer install
 
 before_script: mkdir -p build/logs
 
