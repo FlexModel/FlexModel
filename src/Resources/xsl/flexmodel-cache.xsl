@@ -98,7 +98,7 @@
     <!--
     Adds double-quotes around the value of the node or attribute when the value should be quoted in a PHP array.
     -->
-    <xsl:template match='node()[php:function("ConnectHolland\FlexModel\FlexModel::isQuotedValue", string(self::node() ) )] | @*[php:function("ConnectHolland\FlexModel\FlexModel::isQuotedValue", string(.) )]' mode='value' name='quotedValue'>
+    <xsl:template match='node()[php:function("FlexModel\FlexModel::isQuotedValue", string(self::node() ) )] | @*[php:function("FlexModel\FlexModel::isQuotedValue", string(.) )]' mode='value' name='quotedValue'>
         <xsl:param name='value' select='.'/>
         <xsl:param name='valueContent'/>
 
