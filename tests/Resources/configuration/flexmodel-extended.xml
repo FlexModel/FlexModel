@@ -19,8 +19,8 @@
                 </options>
             </field>
             <field name='textfield' label='' datatype='TEXT'/>
-            <field name='varcharfield' label='' datatype='VARCHAR'>
-                <form_defaults required='true' readonly='false'>
+            <field name='varcharfield' label='' datatype='VARCHAR' required='true'>
+                <form_defaults readonly='false'>
                     <notices hint='Extra help filling out the formfield.' placeholder='Some text within the formfield' description='An attribute defined in the extended schema'/>
                     <validators>
                         <validator name='some_validator_reference' validator_setting='validator_setting_value'/>
