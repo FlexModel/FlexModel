@@ -26,6 +26,7 @@
     -->
     <xs:complexType name='object'>
         <xs:sequence>
+            <xs:element name='orm' type='object.orm' minOccurs='0' maxOccurs='1'/>
             <xs:element name='fields' type='object.fields' minOccurs='0' maxOccurs='1'>
                 <xs:unique name='UniqueObjectFieldName'>
                     <xs:selector xpath='field'/>
@@ -51,7 +52,26 @@
     </xs:complexType>
 
     <!--
-    ...
+    ORM specific settings.
+    -->
+    <xs:complexType name='object.orm'>
+        <xs:sequence>
+            <xs:element name='field-defined' type='object.orm.field-defined' minOccurs='0' maxOccurs='unbounded'/>
+            <xs:any minOccurs='0' processContents='skip'/>
+        </xs:sequence>
+        <xs:attribute name='table' type='xs:string' use='optional'/>
+        <xs:anyAttribute processContents='skip'/>
+    </xs:complexType>
+
+    <!--
+    ORM specific setting: Defining a field exists within a superclass of the object.
+    -->
+    <xs:complexType name='object.orm.field-defined'>
+        <xs:attribute name='name' type='xs:string' use='required'/>
+    </xs:complexType>
+
+    <!--
+    Fields definition within an object.
     -->
     <xs:complexType name='object.fields'>
         <xs:sequence>
@@ -60,7 +80,7 @@
     </xs:complexType>
 
     <!--
-    ...
+    A field definition within an object.
     -->
     <xs:complexType name='object.fields.field'>
         <xs:sequence>
@@ -69,8 +89,9 @@
         </xs:sequence>
         <xs:attributeGroup ref='base-field'/>
         <xs:attribute name='datatype' type='model-datatypes' use='required'/>
-        <xs:attribute name='size' type='xs:integer' use='optional'/>
-        <xs:attribute name='scale' type='xs:integer' use='optional'/>
+        <xs:attribute name='unique' type='boolean' use='optional'/>
+        <xs:attribute name='length' type='xs:integer' use='optional'/>
+        <xs:attribute name='precision' type='xs:integer' use='optional'/>
         <xs:attribute name='default_value' type='xs:string' use='optional'/>
     </xs:complexType>
 
@@ -126,7 +147,7 @@
     </xs:complexType>
 
     <!--
-    ...
+    Default form validators for a field.
     -->
     <xs:complexType name='object.fields.field.form_defaults.validators'>
         <xs:sequence>
@@ -135,7 +156,7 @@
     </xs:complexType>
 
     <!--
-    ...
+    Default form validator settings.
     -->
     <xs:complexType name='object.fields.field.form_defaults.validators.validator'>
         <xs:sequence>
@@ -166,7 +187,7 @@
     </xs:complexType>
 
     <!--
-    ...
+    Fields definition within a form of an object.
     -->
     <xs:complexType name='object.forms.form.fields'>
         <xs:sequence>
