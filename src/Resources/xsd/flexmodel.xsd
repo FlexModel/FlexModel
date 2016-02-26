@@ -51,7 +51,7 @@
     </xs:complexType>
 
     <!--
-    ...
+    Fields definition within an object.
     -->
     <xs:complexType name='object.fields'>
         <xs:sequence>
@@ -60,7 +60,7 @@
     </xs:complexType>
 
     <!--
-    ...
+    A field definition within an object.
     -->
     <xs:complexType name='object.fields.field'>
         <xs:sequence>
@@ -126,7 +126,7 @@
     </xs:complexType>
 
     <!--
-    ...
+    Default form validators for a field.
     -->
     <xs:complexType name='object.fields.field.form_defaults.validators'>
         <xs:sequence>
@@ -135,7 +135,7 @@
     </xs:complexType>
 
     <!--
-    ...
+    Default form validator settings.
     -->
     <xs:complexType name='object.fields.field.form_defaults.validators.validator'>
         <xs:sequence>
@@ -166,7 +166,7 @@
     </xs:complexType>
 
     <!--
-    ...
+    Fields definition within a form of an object.
     -->
     <xs:complexType name='object.forms.form.fields'>
         <xs:sequence>
