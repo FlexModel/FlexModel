@@ -69,8 +69,8 @@
         </xs:sequence>
         <xs:attributeGroup ref='base-field'/>
         <xs:attribute name='datatype' type='model-datatypes' use='required'/>
-        <xs:attribute name='size' type='xs:integer' use='optional'/>
-        <xs:attribute name='scale' type='xs:integer' use='optional'/>
+        <xs:attribute name='length' type='xs:integer' use='optional'/>
+        <xs:attribute name='precision' type='xs:integer' use='optional'/>
         <xs:attribute name='default_value' type='xs:string' use='optional'/>
     </xs:complexType>
 
