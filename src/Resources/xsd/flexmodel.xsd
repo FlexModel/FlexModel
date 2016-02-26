@@ -26,6 +26,7 @@
     -->
     <xs:complexType name='object'>
         <xs:sequence>
+            <xs:element name='orm' type='object.orm' minOccurs='0' maxOccurs='1'/>
             <xs:element name='fields' type='object.fields' minOccurs='0' maxOccurs='1'>
                 <xs:unique name='UniqueObjectFieldName'>
                     <xs:selector xpath='field'/>
@@ -51,6 +52,25 @@
     </xs:complexType>
 
     <!--
+    ORM specific settings.
+    -->
+    <xs:complexType name='object.orm'>
+        <xs:sequence>
+            <xs:element name='field-defined' type='object.orm.field-defined' minOccurs='0' maxOccurs='unbounded'/>
+            <xs:any minOccurs='0' processContents='skip'/>
+        </xs:sequence>
+        <xs:attribute name='table' type='xs:string' use='optional'/>
+        <xs:anyAttribute processContents='skip'/>
+    </xs:complexType>
+
+    <!--
+    ORM specific setting: Defining a field exists within a superclass of the object.
+    -->
+    <xs:complexType name='object.orm.field-defined'>
+        <xs:attribute name='name' type='xs:string' use='required'/>
+    </xs:complexType>
+
+    <!--
     Fields definition within an object.
     -->
     <xs:complexType name='object.fields'>
@@ -69,6 +89,7 @@
         </xs:sequence>
         <xs:attributeGroup ref='base-field'/>
         <xs:attribute name='datatype' type='model-datatypes' use='required'/>
+        <xs:attribute name='unique' type='boolean' use='optional'/>
         <xs:attribute name='length' type='xs:integer' use='optional'/>
         <xs:attribute name='precision' type='xs:integer' use='optional'/>
         <xs:attribute name='default_value' type='xs:string' use='optional'/>
