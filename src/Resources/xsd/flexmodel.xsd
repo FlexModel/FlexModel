@@ -89,6 +89,7 @@
         </xs:sequence>
         <xs:attributeGroup ref='base-field'/>
         <xs:attribute name='datatype' type='model-datatypes' use='required'/>
+        <xs:attribute name='required' type='boolean' use='optional'/>
         <xs:attribute name='unique' type='boolean' use='optional'/>
         <xs:attribute name='length' type='xs:integer' use='optional'/>
         <xs:attribute name='precision' type='xs:integer' use='optional'/>
@@ -133,7 +134,6 @@
             <xs:element name='notices' type='object.fields.field.form_defaults.notices' minOccurs='0' maxOccurs='1'/>
             <xs:element name='validators' type='object.fields.field.form_defaults.validators' minOccurs='0' maxOccurs='1'/>
         </xs:sequence>
-        <xs:attribute name='required' type='boolean' use='optional'/>
         <xs:attribute name='readonly' type='boolean' use='optional'/>
         <xs:attribute name='fieldtype' type='xs:string' use='optional'/>
     </xs:complexType>
