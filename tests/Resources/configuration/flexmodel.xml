@@ -1,12 +1,15 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <flexmodel>
     <object name='Test'>
+        <orm table='test'>
+            <field-defined name='booleanfield'/>
+        </orm>
         <fields>
             <field name='booleanfield' label='' datatype='BOOLEAN' default_value='0'/>
             <field name='datefield' label='' datatype='DATE'/>
             <field name='dateintervalfield' label='' datatype='DATEINTERVAL'/>
             <field name='datetimefield' label='' datatype='DATETIME'/>
-            <field name='decimalfield' label='' datatype='DECIMAL'/>
+            <field name='decimalfield' label='' length='5' precision='2' datatype='DECIMAL'/>
             <field name='filefield' label='' datatype='FILE'/>
             <field name='floatfield' label='' datatype='FLOAT'/>
             <field name='htmlfield' label='' datatype='HTML'/>
@@ -19,7 +22,7 @@
                 </options>
             </field>
             <field name='textfield' label='' datatype='TEXT'/>
-            <field name='varcharfield' label='' datatype='VARCHAR'>
+            <field name='varcharfield' label='' unique='true' datatype='VARCHAR'>
                 <form_defaults required='true' readonly='false'>
                     <notices hint='Extra help filling out the formfield.' placeholder='Some text within the formfield'/>
                     <validators>
