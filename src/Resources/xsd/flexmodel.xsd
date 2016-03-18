@@ -60,6 +60,7 @@
             <xs:any minOccurs='0' processContents='skip'/>
         </xs:sequence>
         <xs:attribute name='table' type='xs:string' use='optional'/>
+        <xs:attribute name='columnEscapeCharacter' type='single-character' use='optional'/>
         <xs:anyAttribute processContents='skip'/>
     </xs:complexType>
 
@@ -333,6 +334,16 @@
     <xs:simpleType name='model-datatypes-foreign'>
         <xs:restriction base='xs:string'>
             <xs:pattern value='(OBJECT.*[a-zA-Z])'/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!--
+    Single character restriction.
+    -->
+    <xs:simpleType name='single-character'>
+        <xs:restriction base='xs:string'>
+            <xs:minLength value='0'/>
+            <xs:maxLength value='1'/>
         </xs:restriction>
     </xs:simpleType>
 
