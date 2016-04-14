@@ -137,6 +137,7 @@
         </xs:sequence>
         <xs:attribute name='readonly' type='boolean' use='optional'/>
         <xs:attribute name='fieldtype' type='xs:string' use='optional'/>
+        <xs:anyAttribute processContents='skip'/>
     </xs:complexType>
 
     <!--
