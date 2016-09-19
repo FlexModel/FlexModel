@@ -300,7 +300,7 @@
     -->
     <xs:simpleType name='option-value'>
         <xs:restriction base='xs:string'>
-            <xs:pattern value='[+_a-z0-9-]*'/>
+            <xs:pattern value='[+_.a-z0-9-]*'/>
         </xs:restriction>
     </xs:simpleType>
 
