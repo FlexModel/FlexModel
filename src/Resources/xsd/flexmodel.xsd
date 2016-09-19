@@ -203,6 +203,9 @@
     <xs:complexType name='object.forms.form.fields.field'>
         <xs:complexContent>
             <xs:extension base='object.fields.field.form_defaults'>
+                <xs:sequence>
+                    <xs:element name='options' type='object.fields.field.options' minOccurs='0' maxOccurs='1'/>
+                </xs:sequence>
                 <xs:attributeGroup ref='form-or-view-field'/>
             </xs:extension>
         </xs:complexContent>
