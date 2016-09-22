@@ -57,6 +57,7 @@
     <xs:complexType name='object.orm'>
         <xs:sequence>
             <xs:element name='field-defined' type='object.orm.field-defined' minOccurs='0' maxOccurs='unbounded'/>
+            <xs:element name='inverse-reference' type='object.orm.inverse-reference' minOccurs='0' maxOccurs='unbounded'/>
             <xs:any minOccurs='0' processContents='skip'/>
         </xs:sequence>
         <xs:attribute name='table' type='xs:string' use='optional'/>
@@ -69,6 +70,15 @@
     -->
     <xs:complexType name='object.orm.field-defined'>
         <xs:attribute name='name' type='xs:string' use='required'/>
+    </xs:complexType>
+
+    <!--
+    ORM specific setting: Defining a reference.
+    -->
+    <xs:complexType name='object.orm.inverse-reference'>
+        <xs:attribute name='name' type='xs:string' use='required'/>
+        <xs:attribute name='object' type='xs:string' use='required'/>
+        <xs:attribute name='field' type='xs:string' use='required'/>
     </xs:complexType>
 
     <!--
