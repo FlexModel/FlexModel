@@ -80,6 +80,11 @@
         <xs:attribute name='object' type='xs:string' use='required'/>
         <xs:attribute name='field' type='xs:string' use='required'/>
         <xs:attribute name='type' type='xs:string' use='optional'/>
+        <xs:attribute name='cascade-persist' type='xs:string' use='optional'/>
+        <xs:attribute name='cascade-remove' type='xs:string' use='optional'/>
+        <xs:attribute name='cascade-merge' type='xs:string' use='optional'/>
+        <xs:attribute name='cascade-detach' type='xs:string' use='optional'/>
+        <xs:attribute name='cascade-all' type='xs:string' use='optional'/>
     </xs:complexType>
 
     <!--
